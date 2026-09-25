@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>difflens</title>
+<style>body{font-family:system-ui,sans-serif;margin:24px;max-width:900px}
+textarea{width:100%;height:96px;font-family:ui-monospace,monospace}
+button{padding:6px 12px;margin:8px 8px 8px 0}pre{background:#f6f6f6;padding:10px;border-radius:6px;overflow:auto}
+.ok{color:#0a7}.bad{color:#c00}</style>
+</head>
+<body>
+<h1>difflens 工作台</h1>
+<p>左侧文本与右侧文本用单独一行 --- 分隔，点对比，结果直接渲染在下面。</p>
+<textarea id="input">alpha
+beta
+gamma
+---
+alpha
+beta2
+gamma
+epsilon</textarea>
+<div><button id="run">对比</button><span id="status" class="ok">等待</span></div>
+<pre id="out">还没跑</pre>
+<script type="module">
+import { render } from "./app.js";
+
+function lines(text) {
+  return text.split("\n").filter((item) => item !== "");
+}
+
+function split(text) {
+  const parts = text.split("\n---\n");
+  return [lines(parts[0] || ""), lines(parts[1] || "")];
+}
+
+document.getElementById("run").addEventListener("click", () => {
+  try {
+    const parts = split(document.getElementById("input").value);
+    const view = render(parts[0], parts[1], { height: 50 });
+    const changed = view.ops.filter((item) => item.op !== "keep").length;
+    const status = document.getElementById("status");
+    status.className = "ok";
+    status.textContent = "行数 " + view.rows.length + " 变化 " + changed;
+    document.getElementById("out").textContent = view.rows.map(function (row) {
+      return row.op + "\t左 " + String(row.left) + "\t右 " + String(row.right);
+    }).join("\n");
+  } catch (error) {
+    const status = document.getElementById("status");
+    status.className = "bad";
+    status.textContent = "出错 " + error.message;
+  }
+});
+</script>
+</body>
+</html>
