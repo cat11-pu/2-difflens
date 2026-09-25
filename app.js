@@ -1,21 +1,29 @@
-// app.js：渲染（基线：全部行渲染，不做视口裁剪）
+// app.js：渲染（只渲染视口内的行，change 行附带行内片段）
 "use strict";
 
-import { diffLines, replay } from "./diffcore.js";
+import { diffLines } from "./diffcore.js";
 import { alignInline } from "./inline.js";
 
 function render(a, b, view) {
   const ops = diffLines(a, b);
+  const height = view && typeof view.height === "number" ? view.height : ops.length;
+  const count = Math.min(height, ops.length);
   const rows = [];
-  for (let i = 0; i < ops.length; i += 1) {
-    const entry = ops[i];
-    rows.push({ index: i, left: a[entry.a] === undefined ? null : a[entry.a],
-                right: b[entry.b] === undefined ? null : b[entry.b], op: entry.op });
-  }
   const inline = [];
-  for (const entry of ops) {
-    if (entry.op !== "change") continue;
-    inline.push({ index: entry.a, segments: alignInline(String(a[entry.a]), String(b[entry.b])) });
+  for (let i = 0; i < count; i += 1) {
+    const entry = ops[i];
+    rows.push({
+      index: i,
+      left: entry.a === null ? null : a[entry.a],
+      right: entry.b === null ? null : b[entry.b],
+      op: entry.op,
+    });
+    if (entry.op === "change") {
+      inline.push({
+        index: entry.a,
+        segments: alignInline(String(a[entry.a]), String(b[entry.b])),
+      });
+    }
   }
   return { rows: rows, inline: inline, ops: ops };
 }

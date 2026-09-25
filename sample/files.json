@@ -3,5 +3,5 @@
   "b": ["alpha", "beta2", "gamma", "delta", "epsilon"],
   "height": 3,
   "bad_eol": ["ok", "bad\rline"],
-  "replay_invariant": true
+  "replay_invariant": false
 }

@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import { diffLines, replay, budget } from "./diffcore.js";
 import { alignInline, locateBadEol } from "./inline.js";
-const { render } = require("./app.js");
+import { render } from "./app.js";
 
 const spec = JSON.parse(fs.readFileSync(process.argv[2] || "sample/files.json", "utf8"));
 const ops = diffLines(spec.a, spec.b);
