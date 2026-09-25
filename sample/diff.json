@@ -1,0 +1,6 @@
+{
+  "conflict_code": "E_PATCH_CONFLICT",
+  "old_lines": ["header", "alpha", "beta", "gamma", "footer"],
+  "new_lines": ["header", "alpha", "BETA", "gamma", "delta", "footer"],
+  "applied": ["b0"]
+}
